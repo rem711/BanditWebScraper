@@ -20,7 +20,7 @@ async function main() {
         gotoTimeout: 120000, // 2min
     });
 
-    let resBillsScraping = await billsScraper.execute(nightmare, cheerio, utils.saveAsCSV, null, null);
+    const resBillsScraping = await billsScraper.execute(nightmare, cheerio, utils.saveAsCSV, null, null);
 
     if(resBillsScraping === 0) {
         console.log("/******************");
@@ -30,4 +30,5 @@ async function main() {
 
     console.log("");
     console.log("");
+    return;
 }

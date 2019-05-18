@@ -54,11 +54,11 @@ async function execute(nightmare, cheerio, saveAsCSV, beginingDate, endingDate) 
     console.log("Connection to ", loginUrl)
     const connected = await connect(nightmare, loginUrl, login, password);
 
-    if(!connected) {
-        closeConnection();
+    if(!connected) {        
         console.log("error :", "Password and username did not match");
         console.log("");
         console.log("");
+        closeConnection(nightmare)
         return 0;
     }
 
@@ -137,7 +137,7 @@ async function connect(nightmare, loginUrl, login, password) {
     const nameInputPassword = "password";
     let connection = false;
     try {
-        await nightmare
+        connection = await nightmare
             // login
             .goto(loginUrl)
             .type("input[name='" + nameInputLogin + "']", login)
@@ -149,24 +149,31 @@ async function connect(nightmare, loginUrl, login, password) {
                 if(document.querySelector(".alert-danger") == null) return true;
                 return false;
             })
-            .then(res => connection = res) // login successfull
+            .then(res => res)
             .catch(e => {
-                connection = false;
-                console.log(e);
+                console.log(e);                
+                return false;
             });            
     }
     catch(e) {
         console.log("error :", e);
     }
-    return connection;
+    finally {
+        return connection;
+    }
 }
 
-function closeConnection(nightmare) {
-    nightmare
+function closeConnection(nightmare) {    
+    try {
+        nightmare
         .end()
         .catch(e => {
             console.log("error :", e);
         });
+    }
+    catch(e) {
+        console.log("error :", e);
+    }
 }
 
 async function getBills(nightmare, billsUrl) {
