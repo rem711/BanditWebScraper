@@ -1,13 +1,23 @@
 {
-  "name": "touchbistro_bandit_bills_scraping",
+  "name": "bandit_web_scraping",
   "version": "1.0.0",
-  "description": "Scrap bills' content for previous day by default or from time interval",
+  "description": "Web scraper originaly made to scrap data from touchbistro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rem711/BanditWebScraper.git"
+  },
   "main": "scraper.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Rémi Courvoisier",
-  "license": "ISC",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "d3-dsv": "^1.1.1",
