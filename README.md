@@ -5,6 +5,6 @@ At the root of the project, create a file named touchbistroAuth.json with the co
 
 touchbistroAuth.json :  
 {  
-    "login" : "yourLogin",  
-    "password" : "yourPassword"  
+    "login" : "modified",  
+    "password" : "modified"  
 }  
