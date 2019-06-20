@@ -306,7 +306,7 @@ function parseBills(cheerio, arrayBills) {
                 // remove total
                 res = res.substr(res.indexOf("$CA") + "$CA".length, res.length);
                 // get tips
-                tips = res.substr(0, res.indexOf("$CA"));
+                tips = res.substr(0, res.indexOf("$CA") - 1);
             }
             // payed by cash
             else if(res.indexOf("Total Change") != -1) {
