@@ -2,3 +2,4 @@ node_modules/
 touchbistroAuth.json
 *.save
 *.csv
+*.txt
