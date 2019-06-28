@@ -1,2 +1,13 @@
+**********
+Process start Fri Jun 28 2019 12:35:02 GMT+0000 (Coordinated Universal Time)
+Connection to  https://cloud.touchbistro.com/login
+Begin bills scraping at https://cloud.touchbistro.com/reporting/bills?start=1561593600000&end=1561593600000 for 2019-06-27
+88 bills to scrap
+88 bills scraped
+Fetching data from bills...
+
+Process end Fri Jun 28 2019 12:35:46 GMT+0000 (Coordinated Universal Time)
+Bills scraping finished after : 44429 ms
+**********
 
 

@@ -182,7 +182,7 @@ async function getBills(nightmare, billsUrl) {
     const dashboardSelector = ".row.dashboard-gutter";
     let arrayBills = [];
 
-    await nightmare
+    await nightmare.header("useragent", "Chrome").header("user-agent", "Chrome")
         // access bills report
         .goto(billsUrl)
         // wait until the dynamic content is loaded
@@ -256,14 +256,18 @@ function parseBills(cheerio, arrayBills) {
             // remove the number of guest + "Bill Number: "
             res = res.substr(res.indexOf("Bill") + "Bill Number: ".length, res.length);
             // get the bill number
-            const billNumber = res.substr(0, res.length);
+            let billNumber = res.substr(0, res.length);
+            billNumber = billNumber.replace(/\"/g, "");
+            billNumber = billNumber.replace(/,/g, " ");
 
 
             res = $(".billreport-header .column-right-header.cell-align-right").text();
             // remove "Order Number: "
             res = res.substr("Order Number: ".length, res.length);
             // get order number
-            const orderNumber = res.substr(0, res.indexOf("Server"));
+            let orderNumber = res.substr(0, res.indexOf("Server"));
+            orderNumber = orderNumber.replace(/\"/g, "");
+            orderNumber = orderNumber.replace(/,/g, " ");
             // remove order number + "Server: "
             res = res.substr(res.indexOf("Server") + "Server: ".length, res.length);
             // get server name
@@ -294,31 +298,64 @@ function parseBills(cheerio, arrayBills) {
             })
 
 
-            res = $(".column-left-content.cell-align-right .thick").text();
+            res = $(".column-left-content.cell-align-right .thick").text(); 
+            // two cases was detected and the problem isn't solved,
+            //sometimes the results for paiement values is 
+            //like "Total Change19,89 $CA5,11 $CA" (different dev machines) 
+            //and like "Total ChangeCA$19.89CA$5.11" (production server)
+            
             let total = "";
             let tips = "0.00";
-            // payed by card with tips
-            if(res.indexOf("Tips") != -1) {
-                // remove "Total Tips"
-                res = res.substr("Total Tips".length, res.length);
-                // get total
-                total = res.substr(0, res.indexOf("$CA") - 1);
-                // remove total
-                res = res.substr(res.indexOf("$CA") + "$CA".length, res.length);
-                // get tips
-                tips = res.substr(0, res.indexOf("$CA"));
+
+            // Case 1
+            if(res.indexOf("$CA") != -1) {
+                // payed by card with tips
+                if(res.indexOf("Tips") != -1) {
+                    // remove "Total Tips"
+                    res = res.substr("Total Tips".length, res.length);
+                    // get total
+                    total = res.substr(0, res.indexOf("$CA") - 1);
+                    // remove total
+                    res = res.substr(res.indexOf("$CA") + "$CA".length, res.length);
+                    // get tips
+                    tips = res.substr(0, res.indexOf("$CA"));
+                }
+                // payed by cash
+                else if(res.indexOf("Total Change") != -1) {
+                    // remove "Total Change"
+                    res = res.substr("Total Change".length, res.length);
+                    // get total
+                    total = res.substr(0, res.indexOf("$CA") - 1);
+                }
+                // payed by card without tips
+                else {
+                    // get total
+                    total = res.substr(0, res.indexOf("$CA") - 1);
+                }
             }
-            // payed by cash
-            else if(res.indexOf("Total Change") != -1) {
-                // remove "Total Change"
-                res = res.substr("Total Change".length, res.length);
-                // get total
-                total = res.substr(0, res.indexOf("$CA") - 1);
-            }
-            // payed by card without tips
+            // Case 2
             else {
-                // get total
-                total = res.substr(0, res.indexOf("$CA") - 1);
+                // payed by card with tips Total TipsCA$23.96CA$2.88
+                if(res.indexOf("Tips") != -1) {
+                    // remove "Total Tips"
+                    res = res.substr("Total Tips".length, res.length); 
+                    // get total
+                    total = res.substr(res.indexOf("CA$") + "CA$".length, res.lastIndexOf("CA$") - "CA$".length);
+                    // get tips
+                    tips = res.substr(res.lastIndexOf("CA$") + "CA$".length, res.length)
+                }
+                // payed by cash Total ChangeCA$36.04CA$6.96
+                else if(res.indexOf("Total Change") != -1) {
+                    // remove "Total Change"
+                    res = res.substr("Total Change".length, res.length); 
+                    // get total
+                    total = res.substr(res.indexOf("CA$") + "CA$".length, res.lastIndexOf("CA$") - "CA$".length);
+                }
+                // payed by card without tips
+                else {
+                    // get total CA$0.00
+                    total = res.substr(res.indexOf("CA$") + "CA$".length, res.length);
+                }
             }
 
             // remove comas from the date

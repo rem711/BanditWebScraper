@@ -1,4 +1,3 @@
-const cron = require("node-cron");
 const utils = require('./utils');
 const billsScraper = require('./touchbistroBillsScraper');
 
@@ -8,12 +7,7 @@ const Nightmare = require('nightmare'); // https://github.com/segmentio/nightmar
 const cheerio = require('cheerio'); // https://github.com/cheeriojs/cheerio
 
 
-//main();
-// every day at 7am (3am for Toronto)
-cron.schedule("* 07 * * *", function() {
-      main();
-});
-
+main();
 
 // entry for all scraping functions
 // using an async function to wait nightmare's execution on the page
